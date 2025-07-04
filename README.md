@@ -26,16 +26,11 @@ But beware — if the cup overflows for more than **3 seconds**, it’s **Game O
 ### 🏠 Main Menu
 ![image](https://github.com/user-attachments/assets/72984171-ab23-4840-b9ca-125af4fff535)
 
----
-
 ### 🎮 Gameplay
 ![image](https://github.com/user-attachments/assets/3b279658-c284-42d3-ae69-03be29f1d303)
 
----
-
 ### ⚙️ Settings
 ![image](https://github.com/user-attachments/assets/5cc944d2-2ba1-4e93-aac7-89abdd95a3eb)
-
 
 ## 🧩 Core Features
 
