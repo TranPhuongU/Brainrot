@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public enum ItemType
 {
@@ -16,32 +17,36 @@ public enum ItemType
 [RequireComponent(typeof(CapsuleCollider2D))]
 public class ItemController : MonoBehaviour
 {
+    [Header("Item Info")]
     public int amountScore;
+    [SerializeField] public ItemType itemType;
+    [SerializeField] private GameObject itemObject;
 
-    [SerializeField] GameObject smokeFx;
-    [SerializeField] AudioClip dropSfx;
-
-    [SerializeField] private AudioClip mergeSound;
-    private AudioSource audioSource;
-
-    [SerializeField] float timeSpawn;
-    private bool canGrow;
+    [Header("Growth Settings")]
+    [SerializeField] private float timeSpawn;
     public float maxSize;
     public float growSpeed;
+    private bool canGrow;
 
+    [Header("Movement Settings")]
     public float moveSpeed = 5f;
-    public bool isDragging = true; // Cho phép gán từ bên ngoài
-    private bool isPlayerSpawned = false;
-    private Rigidbody2D rb;
-    private float screenWidth;
-
-    private float defaulGravity = 1;
-
-    [SerializeField] public ItemType itemType;
-    [SerializeField] private GameObject itemObject; // Prefab nâng cấp tiếp theo
-
     private bool canMoveRight = true;
     private bool canMoveLeft = true;
+    private float screenWidth;
+    private float defaulGravity = 1;
+    public bool isDragging = true;
+    private bool isPlayerSpawned = false;
+
+    [Header("Visual Effects")]
+    [SerializeField] private GameObject smokeFx;
+
+    [Header("Audio")]
+    [SerializeField] private AudioClip mergeSound;
+    [SerializeField] private AudioClip dropSfx;
+    private AudioSource audioSource;
+
+    // Components
+    private Rigidbody2D rb;
 
     void Start()
     {
@@ -55,14 +60,7 @@ public class ItemController : MonoBehaviour
         rb = _rb;
         rb.gravityScale = _gravity;
         canGrow = _canGrow;
-        if (!canGrow)
-        {
-            transform.localScale = new Vector3(1, 1, 1);
-        }
-        else
-        {
-            transform.localScale = new Vector3(.1f, .1f, .1f);
-        }
+        transform.localScale = canGrow ? new Vector3(.1f, .1f, .1f) : new Vector3(1, 1, 1);
     }
 
     void Update()
@@ -80,7 +78,6 @@ public class ItemController : MonoBehaviour
             Vector3 worldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             float newX = worldPos.x;
 
-            // Giới hạn theo vùng deadzone
             if (!canMoveRight && newX > transform.position.x)
                 newX = transform.position.x;
             if (!canMoveLeft && newX < transform.position.x)
@@ -90,7 +87,10 @@ public class ItemController : MonoBehaviour
         }
         else if (Input.GetMouseButtonUp(0))
         {
-            Drop();
+            if (!EventSystem.current.IsPointerOverGameObject())
+            {
+                Drop();
+            }
         }
 #else
         if (Input.touchCount > 0)
@@ -108,7 +108,10 @@ public class ItemController : MonoBehaviour
 
             if (touch.phase == TouchPhase.Ended)
             {
-                Drop();
+                if (!EventSystem.current.IsPointerOverGameObject(touch.fingerId))
+                {
+                    Drop();
+                }
             }
         }
 #endif
@@ -142,31 +145,39 @@ public class ItemController : MonoBehaviour
         {
             if (other.itemType == this.itemType && GetInstanceID() < other.GetInstanceID())
             {
+                Vector3 mergePos = (transform.position + other.transform.position) / 2;
 
                 if (itemObject == null || itemType == ItemType.Lulilo)
                 {
-                    Vector3 mergePoss = (transform.position + other.transform.position) / 2;
-                    Instantiate(smokeFx, mergePoss, Quaternion.identity);
+                    Instantiate(smokeFx, mergePos, Quaternion.identity);
                     GameManager.Instance.PlaySound(mergeSound);
                     GameManager.Instance.currentScore += amountScore;
+
+                    if (isPlayerSpawned || other.isPlayerSpawned)
+                    {
+                        StartCoroutine(DelayedSpawn(timeSpawn));
+                    }
+
                     Destroy(other.gameObject);
                     Destroy(this.gameObject);
                     return;
                 }
 
-               
-                Vector3 mergePos = (transform.position + other.transform.position) / 2;
                 Instantiate(smokeFx, mergePos, Quaternion.identity);
                 GameObject newItem = Instantiate(itemObject, mergePos, Quaternion.identity);
 
                 GameManager.Instance.currentScore += amountScore;
-
                 newItem.GetComponent<ItemController>().SetupItemObject(1, GetComponent<Rigidbody2D>(), false);
                 GameManager.Instance.PlaySound(mergeSound);
 
                 if (newItem.TryGetComponent(out ItemController newController))
                 {
                     newController.DisableDragging();
+                }
+
+                if (isPlayerSpawned || other.isPlayerSpawned)
+                {
+                    StartCoroutine(DelayedSpawn(timeSpawn));
                 }
 
                 Destroy(other.gameObject);

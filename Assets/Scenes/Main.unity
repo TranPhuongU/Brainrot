@@ -1070,7 +1070,7 @@ GameObject:
   - component: {fileID: 633173169}
   - component: {fileID: 633173168}
   m_Layer: 0
-  m_Name: ChatGPT Image 17_44_21 3 thg 7, 2025
+  m_Name: BackGround
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2291,7 +2291,7 @@ Transform:
   m_GameObject: {fileID: 1492282207}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.8043, y: -1.8525, z: 0}
+  m_LocalPosition: {x: -3.16, y: -1.8525, z: 0}
   m_LocalScale: {x: 1.4992244, y: 5.9603496, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2739,7 +2739,7 @@ Transform:
   m_GameObject: {fileID: 1987491774}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.68, y: -1.8338, z: 0}
+  m_LocalPosition: {x: 2.93, y: -1.8338, z: 0}
   m_LocalScale: {x: 1.120752, y: 5.92295, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

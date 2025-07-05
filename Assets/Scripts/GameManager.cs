@@ -27,7 +27,7 @@ public class GameManager : MonoBehaviour
     {
         if (clip == null) return;
 
-        audioSource.Stop(); // 🔇 Tắt âm thanh cũ nếu đang phát
+        audioSource.Stop();
         audioSource.clip = clip;
         audioSource.Play();
     }
